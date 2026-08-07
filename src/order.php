@@ -2,9 +2,15 @@
 
 namespace cwmoss\lolql;
 
+use Closure;
+
 class order {
 
-    public array $parts = [];
+    public array $orders = [];
+    // ../slowfoot/src/store/sqlite.php
+    public array $raw = [];
+    public Closure $fun;
+
     public function __construct(
         public string $source
     ) {
@@ -12,12 +18,15 @@ class order {
     }
 
     public function parse(string $source) {
-        $this->parts = parser::words($source);
+        $this->orders = array_map(parser::words(...), explode(",", $source));
+        [$fun, $raw] = $this->build_order_fun();
+        $this->fun = $fun;
+        $this->raw = $raw;
     }
 
     public function build_order_fun(): array {
         $os = [];
-        foreach ($this->parts as $k => $o) {
+        foreach ($this->orders as $k => $o) {
             //$key = $dir = $cmp = null;
             // keys must start with 0, 1, 2...
             list($key, $dir, $cmp) = array_merge($o) + ['', '', ''];

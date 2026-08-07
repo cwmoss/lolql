@@ -8,6 +8,7 @@ make queries easy & keep it simple
 namespace cwmoss\lolql;
 
 use Closure;
+use LogicException;
 
 class parser {
 
@@ -25,6 +26,7 @@ class parser {
             return $res;
         }, []);
         $qk = array_key_first($parts);
+        if (!is_array($parts[$qk])) throw new LogicException("Could not parse expression $source");
 
         $q = self::array_map_recursive(fn($it) => self::parse_condition($it), $parts[$qk]);
 
@@ -87,10 +89,10 @@ x next logical operator (&& ||)
                 $lr = 'r';
             } elseif ($item[0] == '"') {
                 $buffer->add_left_right_content($lr, trim($item, '"'));
-                $buffer->update_left_right_type($lr, "v");
+                $buffer->update_left_right_type_value($lr);
             } elseif (!in_array($item, ['[', ']', '.', ','])) {
                 $buffer->add_left_right_content($lr, $item);
-                $buffer->update_left_right_type($lr, "k");
+                $buffer->update_left_right_type_key($lr);
             }
         }
         if ($buffer && $buffer->operator) {

@@ -24,7 +24,7 @@ final class BaseTest extends TestCase {
         $this->assertEquals(2, count($q->conditions[0]));
 
         $q = new parser()->parse('person(name=="luisa" && city=="leipzig")');
-        print_r($q);
+        //  print_r($q);
         $this->assertEquals(2, count($q->conditions));
         $this->assertEquals(2, count($q->conditions[1]));
     }
