@@ -65,5 +65,19 @@ final class QueryTest extends TestCase {
         $this->assertEquals(2, count($res));
         // print_r($res);
         $this->assertEquals("a5", $res[0]["_id"]);
+
+        $q = 'article() order(_id)';
+        $res = new lolql($q)->run($this->testdata);
+        $this->assertEquals(2, count($res));
+        // print_r($res);
+        $this->assertEquals("a4", $res[0]["_id"]);
+    }
+
+    public function testArray(): void {
+        $q = '*(authors._ref=="4")';
+        // $q = '*(authors._ref==4)'; // fails
+        $res = new lolql($q)->run($this->testdata);
+        print_r($res);
+        $this->assertEquals(1, count($res));
     }
 }
