@@ -4,10 +4,9 @@ namespace cwmoss\lolql;
 
 use Closure;
 
-/*
-    query represents a parsed lolql query string
-*/
-
+/**
+ *    query represents a parsed lolql query string
+ */
 class query {
 
     public function __construct(

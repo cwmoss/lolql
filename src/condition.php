@@ -2,11 +2,6 @@
 
 namespace cwmoss\lolql;
 
-
-/*
-    query represents a parsed lolql query string
-*/
-
 class condition {
 
     public function __construct(

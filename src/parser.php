@@ -1,9 +1,4 @@
 <?php
-/*
-lolql - lovely query language
-
-make queries easy & keep it simple
-*/
 
 namespace cwmoss\lolql;
 

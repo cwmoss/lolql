@@ -80,4 +80,22 @@ final class QueryTest extends TestCase {
         print_r($res);
         $this->assertEquals(1, count($res));
     }
+
+    // '*(title[] matches "hello" || (pub.status == $status && _id == 55) || date(publ) > now()) order(name age)',
+    /*
+    //$test[] = '*(_type == "article" && status != "draft")  order(name, familyname desc number) limit(11) ok ';
+$test[] = '😂(_type == "article" && author == "heinz" && (status != "draft" || posted_by == "importer"))  order(name, familyname desc number) limit(11) ok ';
+$test[] = 'article() order (created_at)';
+$test[] = 'work() order (created_at)';
+$test[] = '*() order (created_at)';
+
+$test[] = ' order (created_at)';
+$test[] = '*(status.update != "draft" ||    posted_by == "importer 03 ok")';
+$test[] = '*(_type ==  "article"  && master.tag[].ref in ["huhu", "ha\"ha", \'she said\', ":\'hi\'"])';
+$test[] = '*(_type ==  "article"  && tag in ["huhu", "ok"])
+    # order(status)
+    limit(8)
+';
+$test[] = 'article(tag in ["huhu", "ok"])';
+*/
 }
