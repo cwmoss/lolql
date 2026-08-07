@@ -26,6 +26,10 @@ function cmp_eq($l, $r)
     return ($l['v'][0] == $r['v'][0]);
 }
 
+function cmp_ne($l, $r)
+{
+    return !cmp_eq($l, $r);
+}
 function cmp_lt($l, $r)
 {
     dbg('cmp +++ < ', $l, $r);
@@ -93,9 +97,11 @@ title in ["Aliens", "Interstellar", "Passengers"]
 */
 function cmp_in($l, $r)
 {
+    #dbg("cmp in l r", $l, $r);
+
     if ($l['t'] == 'k') {
-        $haystack = $l['v'];
-        $needle = $r['v'][0];
+        $haystack = $r['v']; #$l['v'];
+        $needle = $l['v']; #$r['v'][0];
     } else {
         $haystack = $r['v'];
         $needle = $r['v'][0];
