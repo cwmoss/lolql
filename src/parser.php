@@ -73,13 +73,13 @@ x next logical operator (&& ||)
         $res = [];
         foreach ($tokens as $item) {
             if ($item == '&&' || $item == '||') {
-                $buffer->next = $item == '&&' ? logic_operator::and : logic_operator::or;
+                $buffer->next = logic_operator::from($item);
                 $res[] = $buffer;
                 $buffer = new condition();
                 $lr = 'l';
                 continue;
             }
-            if (in_array($item, ['==', 'in', '!=', '>', '<', '<=', '>=', 'matches'])) {
+            if (in_array($item, ['==', 'in', '!=', '>', '<', '<=', '>=', 'matches', 'notnull', 'isnull'])) {
                 $buffer->operator = operator::parse($item);
                 $lr = 'r';
             } elseif ($item[0] == '"') {

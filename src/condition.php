@@ -21,11 +21,11 @@ class condition {
         return match ($this->operator) {
             operator::eq => $this->cmp_eq($left, $right),
             operator::neq => !$this->cmp_eq($left, $right),
-            operator::gt => $this->cmp_gt($left, $right),
-            operator::lt => $this->cmp_lt($left, $right),
             operator::matches => $this->cmp_matches($left, $right),
             operator::in => $this->cmp_in($left, $right),
-            default => false
+            operator::isnull => $this->cmp_null($left),
+            operator::notnull => !$this->cmp_null($left),
+            default => $this->cmp_non_arrays($left, $right),
         };
     }
 
@@ -42,6 +42,10 @@ class condition {
             return $left[0] == $right;
         }
         return ($left[0] == $right[0]);
+    }
+
+    public function cmp_null(mixed $left): bool {
+        return is_null($left);
     }
 
     public function cmp_matches(mixed $left, mixed $right): bool {
@@ -80,36 +84,32 @@ title in ["Aliens", "Interstellar", "Passengers"]
         return in_array($needle, $haystack);
     }
 
-    function cmp_lt(mixed $left, mixed $right): bool {
+    public function get_non_array_values_for_compare(mixed $left, mixed $right) {
         if ($this->left->is_key) {
             if (is_array($left))
                 return false;
-            return $left < $right[0];
+            return [$left, $right[0]];
         }
         if ($this->right->is_key) {
             if (is_array($right)) {
                 return false;
             }
-            return $left[0] < $right;
+            return [$left[0], $right];
         }
-        return ($left[0] < $right[0]);
+        return [$left[0], $right[0]];
     }
 
-    function cmp_gt(mixed $left, mixed $right): bool {
-        if ($this->left->is_key) {
-            if (is_array($left))
-                return false;
-            return $left > $right[0];
-        }
-        if ($this->right->is_key) {
-            if (is_array($right)) {
-                return false;
-            }
-            return $left[0] > $right;
-        }
-        return ($left[0] > $right[0]);
+    public function cmp_non_arrays(mixed $left, mixed $right): bool {
+        $vals = $this->get_non_array_values_for_compare($left, $right);
+        if (!$vals) return false;
+        return match ($this->operator) {
+            operator::lt => $vals[0] < $vals[1],
+            operator::lte => $vals[0] <= $vals[1],
+            operator::gt => $vals[0] > $vals[1],
+            operator::gte => $vals[0] >= $vals[1],
+            default => false
+        };
     }
-
     public function add_left_right_content(string $lr, mixed $content) {
         if ($lr == "l") $this->left->content[] = $content;
         else $this->right->content[] = $content;

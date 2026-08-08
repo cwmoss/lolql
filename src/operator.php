@@ -3,6 +3,7 @@
 namespace cwmoss\lolql;
 
 enum operator {
+
     case eq;
     case neq;
     case gt;
@@ -11,10 +12,11 @@ enum operator {
     case lte;
     case in;
     case matches;
+    case notnull;
+    case isnull;
 
     static function parse(string $source): self {
-        // '==', 'in', '!=', '>', '<', '<=', '>=', 'matches'
-        return match ($source) {
+        return match (strtolower($source)) {
             '==' => self::eq,
             '!=' => self::neq,
             '>' => self::gt,
@@ -23,6 +25,8 @@ enum operator {
             '<=' => self::lte,
             'in' => self::in,
             'matches' => self::matches,
+            'notnull' => self::notnull,
+            'isnull' => self::isnull,
         };
     }
 }

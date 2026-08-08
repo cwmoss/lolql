@@ -9,13 +9,13 @@ use cwmoss\lolql\parser;
 final class QueryTest extends TestCase {
 
     public $testdata = [
-        ['_id' => 'a1', 'title' => 'hey', 'status' => 'draft', 'authors' => [['_ref' => '2'], ['_ref' => '4']]],
-        ['_id' => 'a2', 'title' => 'hello', 'status' => 'published', 'tags' => ['hot', 'cold']],
-        ['_id' => 'a3', 'title' => 'world', 'status' => 'published', 'tags' => ['hot']],
+        ['_id' => 'a1', 'title' => 'hey', 'status' => 'draft', 'visits' => 20, 'authors' => [['_ref' => '2'], ['_ref' => '4']]],
+        ['_id' => 'a2', 'title' => 'hello', 'status' => 'published', 'tags' => ['hot', 'cold'], 'visits' => 200],
+        ['_id' => 'a3', 'title' => 'world', 'status' => 'published', 'tags' => ['hot'], 'visits' => 5],
         ['_id' => 'a4', 'title' => 'hello world', 'status' => 'published', '_type' => 'article'],
         ['_id' => 'a5', 'title' => 'world is caos', 'status' => 'draft', '_type' => 'article', 'tags' => ['blue']],
-        ['_id' => 'a6', 'title' => 'yourworld is caos', 'status' => 'published'],
-        ['_id' => 'a7', 'title' => 'worldwideweb', 'status' => 'waiting'],
+        ['_id' => 'a6', 'title' => 'yourworld is caos', 'status' => 'published', 'visits' => 55],
+        ['_id' => 'a7', 'title' => 'worldwideweb', 'status' => 'waiting', 'visits' => 14],
     ];
 
     public function testEquals(): void {
@@ -59,6 +59,17 @@ final class QueryTest extends TestCase {
         $this->assertEquals(1, count($res));
     }
 
+    public function testLtGt(): void {
+        $q = '*(_id < "a2")';
+        $res = new lolql($q)->run($this->testdata);
+        $this->assertEquals(1, count($res));
+
+        $q = '*(_id > "a2")';
+        $res = new lolql($q)->run($this->testdata);
+        // print_r($res);
+        $this->assertEquals(5, count($res));
+    }
+
     public function testOrder(): void {
         $q = 'article() order(_id desc)';
         $res = new lolql($q)->run($this->testdata);
@@ -71,6 +82,28 @@ final class QueryTest extends TestCase {
         $this->assertEquals(2, count($res));
         // print_r($res);
         $this->assertEquals("a4", $res[0]["_id"]);
+    }
+
+    public function xxtestNumber(): void {
+        $q = new lolql('*(bling notnull &&visits>20)');
+        $res = $q->run($this->testdata);
+        print_r($q);
+        $this->assertEquals(2, count($res));
+        $q = '*(visits>=20)';
+        $res = new lolql($q)->run($this->testdata);
+        // print_r($res);
+        $this->assertEquals(3, count($res));
+    }
+
+    public function testNull(): void {
+        $q = new lolql('*(bling notnull)');
+        $res = $q->run($this->testdata);
+        print_r($q);
+        $this->assertEquals(0, count($res));
+        $q = new lolql('*(authors isnull)');
+        $res = $q->run($this->testdata);
+        // print_r($q);
+        $this->assertEquals(6, count($res));
     }
 
     public function testArray(): void {
