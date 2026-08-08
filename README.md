@@ -21,7 +21,7 @@ expression parser and evaluator for filtering datasets (arrays or sqlite json ta
 
 ### complete examples
 
-    *(_type == "post" and cat=='music') order(published_at desc) limit(5)
+    *(_type == "post" && cat=='music') order(published_at desc) limit(5)
     // 5 newest posts in the music category
 
 ## filter examples
