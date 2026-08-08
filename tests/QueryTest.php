@@ -18,6 +18,11 @@ final class QueryTest extends TestCase {
         ['_id' => 'a7', 'title' => 'worldwideweb', 'status' => 'waiting', 'visits' => 14],
     ];
 
+    public function testAll(): void {
+        $q = '*()';
+        $res = new lolql($q)->run($this->testdata);
+        $this->assertEquals(7, count($res));
+    }
     public function testEquals(): void {
         $q = 'article()';
         $res = new lolql($q)->run($this->testdata);

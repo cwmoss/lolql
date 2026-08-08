@@ -63,6 +63,8 @@ class query {
         #print_r($query);
         $evaluator = function (array $query, array $item, array $params = [], int $level = 0) use (&$evaluator) {
             // dbg('level... ', $level);
+            // empty condition => fits all
+            if (!$query) return [true, null];
             foreach ($query as $q) {
                 // dbg("+++ get evaluator level", $level, $q);
                 if (!is_object($q)) {
