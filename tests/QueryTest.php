@@ -112,6 +112,11 @@ final class QueryTest extends TestCase {
         $res = new lolql($q)->run($this->testdata);
         // print_r($res);
         $this->assertEquals(1, count($res));
+
+        $q = '*(authors._ref==4)';
+        $res = new lolql($q)->run($this->testdata);
+        // print_r($res);
+        $this->assertEquals(1, count($res));
     }
 
     // '*(title[] matches "hello" || (pub.status == $status && _id == 55) || date(publ) > now()) order(name age)',
