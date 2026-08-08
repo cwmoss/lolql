@@ -4,6 +4,9 @@ namespace cwmoss\lolql;
 
 class condition {
 
+    // parsing starts filling the left side
+    private bool $current_is_left = true;
+
     public function __construct(
         public ?condition_part $left = null,
         public ?condition_part $right = null,
@@ -33,15 +36,15 @@ class condition {
         if ($this->left->is_key) {
             if (is_array($left))
                 return array_search($right[0], $left);
-            return $left == $right[0];
+            return $left == $right;
         }
         if ($this->right->is_key) {
             if (is_array($right)) {
                 return array_search($left[0], $right);
             }
-            return $left[0] == $right;
+            return $left == $right;
         }
-        return ($left[0] == $right[0]);
+        return ($left == $right);
     }
 
     public function cmp_null(mixed $left): bool {
@@ -52,7 +55,7 @@ class condition {
         if (!$this->right->is_value) {
             return false;
         }
-        $val = $this->right->content[0];
+        $val = $this->right->content;
         // arrays as name not supported for now
         if ($val[0] == '*') {
             return str_ends_with($left, ltrim($val, '*'));
@@ -77,7 +80,7 @@ title in ["Aliens", "Interstellar", "Passengers"]
             $needle = $left; #$r['v'][0];
         } else {
             $haystack = $right;
-            $needle = $left[0];
+            $needle = $left;
         }
         // print_r(["in", $this, $left, $right]);
         if (!is_array($haystack)) return false;
@@ -88,15 +91,15 @@ title in ["Aliens", "Interstellar", "Passengers"]
         if ($this->left->is_key) {
             if (is_array($left))
                 return false;
-            return [$left, $right[0]];
+            return [$left, $right];
         }
         if ($this->right->is_key) {
             if (is_array($right)) {
                 return false;
             }
-            return [$left[0], $right];
+            return [$left, $right];
         }
-        return [$left[0], $right[0]];
+        return [$left, $right];
     }
 
     public function cmp_non_arrays(mixed $left, mixed $right): bool {
@@ -110,16 +113,12 @@ title in ["Aliens", "Interstellar", "Passengers"]
             default => false
         };
     }
-    public function add_left_right_content(string $lr, mixed $content) {
-        if ($lr == "l") $this->left->content[] = $content;
-        else $this->right->content[] = $content;
+
+    public function set_operator(operator $op) {
+        $this->operator = $op;
+        $this->current_is_left = false;
     }
-    public function update_left_right_type_key(string $lr) {
-        if ($lr == "l") $this->left->update_type_key();
-        else $this->right->update_type_key();
-    }
-    public function update_left_right_type_value(string $lr) {
-        if ($lr == "l" && !$this->left->type) $this->left->update_type_value();
-        else $this->right->update_type_value();
+    public condition_part $current {
+        get => $this->current_is_left ? $this->left : $this->right;
     }
 }

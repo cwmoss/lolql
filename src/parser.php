@@ -32,8 +32,8 @@ class parser {
             array_unshift(
                 $q,
                 new condition(
-                    new condition_part("k", ['_type']),
-                    new condition_part("v", [$qk]),
+                    new condition_part("k", null, ['_type']),
+                    new condition_part("v", $qk),
                     operator::eq,
                     logic_operator::and
                 )
@@ -59,36 +59,36 @@ class parser {
         $t = self::combine_tokens($t);
         return $t;
     }
-    /*
-l left
-r right
-t type (k key, v value)
-c content
-o operator
-x next logical operator (&& ||)
-*/
+
     static public function combine_tokens(array $tokens): array {
+        // print_r($tokens);
         $buffer = new condition();
-        $lr = 'l';
         $res = [];
         foreach ($tokens as $item) {
             if ($item == '&&' || $item == '||') {
                 $buffer->next = logic_operator::from($item);
                 $res[] = $buffer;
                 $buffer = new condition();
-                $lr = 'l';
                 continue;
             }
             $op = operator::parse($item);
             if ($op) {
-                $buffer->operator = $op;
-                $lr = 'r';
-            } elseif ($item[0] == '"') {
-                $buffer->add_left_right_content($lr, trim($item, '"'));
-                $buffer->update_left_right_type_value($lr);
+                $buffer->set_operator($op);
+                continue;
+            }
+            // left or right condition_part
+            $current = $buffer->current;
+            if ($item[0] == '"') {
+                $current->set_literal($item, '"');
+            } elseif ($item[0] == "'") {
+                $current->set_literal($item, "'");
+            } elseif ($item == "[") {
+                // maybe start a literal array
+                if (!$current->type) {
+                    $current->literal_type = "array";
+                }
             } elseif (!in_array($item, ['[', ']', '.', ','])) {
-                $buffer->add_left_right_content($lr, $item);
-                $buffer->update_left_right_type_key($lr);
+                $current->add_path($item);
             }
         }
         if ($buffer && $buffer->operator) {

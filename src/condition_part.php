@@ -4,10 +4,13 @@ namespace cwmoss\lolql;
 
 class condition_part {
 
+    public $literal_type = "string";
+
     // type k key v value
     public function __construct(
         public ?string $type = null,
-        public array $content = [],
+        public null|string|int|array $content = null,
+        public array $path = [],
     ) {
     }
 
@@ -19,6 +22,20 @@ class condition_part {
         get => $this->type == "v";
     }
 
+    public function set_literal(mixed $c, ?string $trim = null) {
+        if ($trim) $c = trim($c, $trim);
+        if ($this->literal_type == "array") {
+            if (!$this->content) $this->content = [$c];
+            else $this->content[] = $c;
+        } else {
+            $this->content = $c;
+        }
+        $this->type = "v";
+    }
+    public function add_path(string $p) {
+        $this->path[] = $p;
+        $this->type = "k";
+    }
     public function update_type_key() {
         if (!$this->type) $this->type = "k";
     }
@@ -29,7 +46,7 @@ class condition_part {
 
     public function get_value(mixed $data) {
         if ($this->type == 'k') {
-            return self::resolve_value($this->content, $data);
+            return self::resolve_value($this->path, $data);
         } else {
             return $this->content;
         }
