@@ -24,6 +24,17 @@ class order {
         $this->raw = $raw;
     }
 
+    public function build_order_sql(?Closure $prop_name_fn = null): string {
+        if (!$this->raw) return "";
+        if (!$prop_name_fn) $prop_name_fn = fn($n) => $n;
+
+        $sql = [];
+        foreach ($this->raw as $order) {
+            $sql[] = $prop_name_fn($order['k']) . ' ' . $order['d'];
+        }
+        return join(", ", $sql);
+    }
+
     public function build_order_fun(): array {
         $os = [];
         foreach ($this->orders as $k => $o) {

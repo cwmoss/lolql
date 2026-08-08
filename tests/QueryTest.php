@@ -77,7 +77,7 @@ final class QueryTest extends TestCase {
         $q = '*(authors._ref=="4")';
         // $q = '*(authors._ref==4)'; // fails
         $res = new lolql($q)->run($this->testdata);
-        print_r($res);
+        // print_r($res);
         $this->assertEquals(1, count($res));
     }
 
