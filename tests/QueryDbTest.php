@@ -35,7 +35,7 @@ final class QueryDbTest extends TestCase {
 
         $q = 'article( status=="draft" )';
         [$res, $info] = new lolql($q)->run_pdo($db);
-        print_r($res);
+        // print_r($res);
         $this->assertEquals(1, count($res));
 
         $q = 'article( status != "trash" )';
