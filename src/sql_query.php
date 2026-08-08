@@ -14,15 +14,16 @@ class sql_query {
 
     public function __construct(
         query $q,
+        array $params = [],
         public string $table_name = "docs",
         public string $json_column_name = "body"
     ) {
-        $this->make_query($q);
+        $this->make_query($q, $params);
     }
 
-    public function make_query(query $query): self {
+    public function make_query(query $query, array $params = []): self {
         $sql = 'SELECT %s from %s WHERE %s(%s)';
-        $this->fun = $query->eval_cond_as_sql_function();
+        $this->fun = $query->eval_cond_as_sql_function($params);
         $this->fun_name = 'lolql_' . bin2hex(\random_bytes(8));
         // $db->createFunction($name, $fn, 1);
         $q = sprintf(

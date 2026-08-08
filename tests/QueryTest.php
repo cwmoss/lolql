@@ -98,7 +98,7 @@ final class QueryTest extends TestCase {
     public function testNull(): void {
         $q = new lolql('*(bling notnull)');
         $res = $q->run($this->testdata);
-        print_r($q);
+        // print_r($q);
         $this->assertEquals(0, count($res));
         $q = new lolql('*(authors isnull)');
         $res = $q->run($this->testdata);
@@ -115,6 +115,17 @@ final class QueryTest extends TestCase {
 
         $q = '*(authors._ref==4)';
         $res = new lolql($q)->run($this->testdata);
+        // print_r($res);
+        $this->assertEquals(1, count($res));
+    }
+
+    public function testParams(): void {
+        $q = new lolql('*(authors._ref==$id)');
+        $res = $q->run($this->testdata, ["id" => "44"]);
+        // print_r($q);
+        $this->assertEquals(0, count($res));
+
+        $res = $q->run($this->testdata, ["id" => "4"]);
         // print_r($res);
         $this->assertEquals(1, count($res));
     }

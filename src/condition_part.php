@@ -32,6 +32,11 @@ class condition_part {
         }
         $this->type = "v";
     }
+    public function set_parameter(string $p) {
+        $this->content = ltrim($p, '$');
+        $this->literal_type = "parameter";
+        $this->type = "v";
+    }
     public function add_path(string $p) {
         $this->path[] = $p;
         $this->type = "k";
@@ -44,10 +49,14 @@ class condition_part {
         if (!$this->type) $this->type = "v";
     }
 
-    public function get_value(mixed $data) {
+    public function get_value(mixed $data, array $params = []) {
         if ($this->type == 'k') {
             return self::resolve_value($this->path, $data);
         } else {
+            if ($this->literal_type == "parameter") {
+                // print "fetch parameter $this->content // " . $params[$this->content];
+                return $params[$this->content] ?? null;
+            }
             return $this->content;
         }
     }

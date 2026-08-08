@@ -18,16 +18,16 @@ class lolql {
         $this->query = new parser($query)->parse($query);
     }
 
-    public function run(array $data): array {
-        return $this->query->query($data);
+    public function run(array $data, array $params = []): array {
+        return $this->query->query($data, $params);
     }
 
-    public function make_sql(): sql_query {
-        return new sql_query($this->query);
+    public function make_sql(array $params = []): sql_query {
+        return new sql_query($this->query, $params);
     }
 
-    public function run_pdo(PDO\Sqlite $db): array {
-        $q = $this->make_sql();
+    public function run_pdo(PDO\Sqlite $db, array $params = []): array {
+        $q = $this->make_sql($params);
 
         $db->createFunction($q->fun_name, $q->fun, 1);
 

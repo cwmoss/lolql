@@ -61,7 +61,7 @@ class parser {
     }
 
     static public function combine_tokens(array $tokens): array {
-        print_r($tokens);
+        // print_r($tokens);
         $buffer = new condition();
         $res = [];
         foreach ($tokens as $item) {
@@ -82,6 +82,8 @@ class parser {
                 $current->set_literal($item, '"');
             } elseif ($item[0] == "'") {
                 $current->set_literal($item, "'");
+            } elseif ($item[0] == '$') {
+                $current->set_parameter($item);
             } elseif ($item == "[") {
                 // maybe start a literal array
                 if (!$current->type) {

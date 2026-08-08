@@ -95,4 +95,17 @@ final class QueryDbTest extends TestCase {
         // print_r($res);
         $this->assertEquals(1, count($res));
     }
+
+    public function testParams(): void {
+        $db = $this->make_db();
+        $q = new lolql('*(authors._ref==$id)');
+        [$res, $info] = $q->run_pdo($db, ["id" => "44"]);
+        // print_r($q);
+        $this->assertEquals(0, count($res));
+
+        [$res, $info] = $q->run_pdo($db, ["id" => "4"]);
+        $res = $q->run($this->testdata, ["id" => "4"]);
+        // print_r($res);
+        $this->assertEquals(1, count($res));
+    }
 }

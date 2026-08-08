@@ -17,9 +17,9 @@ class condition {
         if (!$right) $this->right = new condition_part();
     }
 
-    public function eval(array $item): bool {
-        $left = $this->left->get_value($item);
-        $right = $this->right->get_value($item);
+    public function eval(array $item, array $params = []): bool {
+        $left = $this->left->get_value($item, $params);
+        $right = $this->right->get_value($item, $params);
 
         return match ($this->operator) {
             operator::eq => $this->cmp_eq($left, $right),
@@ -35,12 +35,12 @@ class condition {
     public function cmp_eq(mixed $left, mixed $right): bool {
         if ($this->left->is_key) {
             if (is_array($left))
-                return array_search($right[0], $left);
+                return array_search($right, $left);
             return $left == $right;
         }
         if ($this->right->is_key) {
             if (is_array($right)) {
-                return array_search($left[0], $right);
+                return array_search($left, $right);
             }
             return $left == $right;
         }

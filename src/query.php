@@ -26,9 +26,9 @@ class query {
     }
 
     // TODO: slice/ limit
-    public function query(array $ds, $params = []): array {
+    public function query(array $ds, array $params = []): array {
         // TODO: params aus dem parsing herausnehmen und zum evaluierungszeitpunkt einfügen
-        $rs = $this->eval_cond($ds);
+        $rs = $this->eval_cond($ds, $params);
 
         if ($this->order) {
             usort($rs, $this->order->fun);
@@ -37,40 +37,40 @@ class query {
         return array_values($rs);
     }
 
-    public function eval_cond(array $db): array {
+    public function eval_cond(array $db, array $params = []): array {
         $evaluator = $this->get_evaluator();
         $query = $this->conditions;
-        return array_filter($db, static function ($item) use ($query, $evaluator) {
+        return array_filter($db, static function ($item) use ($query, $evaluator, $params) {
             // dbg('item-compare...', $item['_id'], $item['title']);
-            [$ok, $next] = $evaluator($query, $item);
+            [$ok, $next] = $evaluator($query, $item, $params);
             return $ok;
         });
     }
 
-    public function eval_cond_as_sql_function(): Closure {
+    public function eval_cond_as_sql_function(array $params = []): Closure {
         $evaluator = $this->get_evaluator();
         $query = $this->conditions;
-        return static function ($json_col) use ($query, $evaluator) {
+        return static function ($json_col) use ($params, $query, $evaluator) {
             $item = json_decode($json_col, true);
             #print_r($item);
             #return true;
-            [$ok, $dummy] = $evaluator($query, $item);
+            [$ok, $dummy] = $evaluator($query, $item, $params);
             return $ok;
         };
     }
 
     public function get_evaluator(): Closure {
         #print_r($query);
-        $evaluator = function ($query, $item, $level = 0) use (&$evaluator) {
+        $evaluator = function (array $query, array $item, array $params = [], int $level = 0) use (&$evaluator) {
             // dbg('level... ', $level);
             foreach ($query as $q) {
                 // dbg("+++ get evaluator level", $level, $q);
                 if (!is_object($q)) {
                     //print "\n\nhuhu\n\n";
                     //\dbg('.. klammer', $q);
-                    [$ok, $next] = $evaluator($q, $item, $level + 1);
+                    [$ok, $next] = $evaluator($q, $item, $params, $level + 1);
                 } else {
-                    $ok = $q->eval($item);
+                    $ok = $q->eval($item, $params);
                     $next = $q->next;
                 }
 
