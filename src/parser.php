@@ -61,7 +61,7 @@ class parser {
     }
 
     static public function combine_tokens(array $tokens): array {
-        // print_r($tokens);
+        print_r($tokens);
         $buffer = new condition();
         $res = [];
         foreach ($tokens as $item) {
@@ -86,6 +86,13 @@ class parser {
                 // maybe start a literal array
                 if (!$current->type) {
                     $current->literal_type = "array";
+                }
+            } elseif (is_numeric($item)) {
+                if ($current->type != "k") {
+                    $current->set_literal($item);
+                    $current->literal_type = "number";
+                } else {
+                    $current->add_path($item);
                 }
             } elseif (!in_array($item, ['[', ']', '.', ','])) {
                 $current->add_path($item);

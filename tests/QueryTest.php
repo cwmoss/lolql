@@ -84,10 +84,10 @@ final class QueryTest extends TestCase {
         $this->assertEquals("a4", $res[0]["_id"]);
     }
 
-    public function xxtestNumber(): void {
-        $q = new lolql('*(bling notnull &&visits>20)');
+    public function testNumber(): void {
+        $q = new lolql('*(bling isnull && visits>20)');
         $res = $q->run($this->testdata);
-        print_r($q);
+        // print_r($q);
         $this->assertEquals(2, count($res));
         $q = '*(visits>=20)';
         $res = new lolql($q)->run($this->testdata);
