@@ -2,31 +2,21 @@
 
 namespace cwmoss\lolql;
 
-enum operator {
+enum operator: string {
 
-    case eq;
-    case neq;
-    case gt;
-    case lt;
-    case gte;
-    case lte;
-    case in;
-    case matches;
-    case notnull;
-    case isnull;
+    case eq = "==";
+    case neq = "!=";
+    case gt = ">";
+    case lt = "<";
+    case gte = ">=";
+    case lte = "<=";
+    case in = "in";
+    case matches = "matches";
+    case notnull = "notnull";
+    case isnull = "isnull";
 
-    static function parse(string $source): self {
-        return match (strtolower($source)) {
-            '==' => self::eq,
-            '!=' => self::neq,
-            '>' => self::gt,
-            '>=' => self::gte,
-            '<' => self::lt,
-            '<=' => self::lte,
-            'in' => self::in,
-            'matches' => self::matches,
-            'notnull' => self::notnull,
-            'isnull' => self::isnull,
-        };
+    static public function parse(string $source): ?self {
+        $source = strtolower($source);
+        return self::tryFrom($source);
     }
 }

@@ -79,8 +79,9 @@ x next logical operator (&& ||)
                 $lr = 'l';
                 continue;
             }
-            if (in_array($item, ['==', 'in', '!=', '>', '<', '<=', '>=', 'matches', 'notnull', 'isnull'])) {
-                $buffer->operator = operator::parse($item);
+            $op = operator::parse($item);
+            if ($op) {
+                $buffer->operator = $op;
                 $lr = 'r';
             } elseif ($item[0] == '"') {
                 $buffer->add_left_right_content($lr, trim($item, '"'));
