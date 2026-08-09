@@ -76,10 +76,10 @@ final class QueryTest extends TestCase {
     }
 
     public function testOrder(): void {
-        $q = 'article() order(_id desc)';
-        $res = new lolql($q)->run($this->testdata);
+        $q = new lolql('article() order(_id desc)');
+        $res = $q->run($this->testdata);
         $this->assertEquals(2, count($res));
-        // print_r($res);
+        print_r($q);
         $this->assertEquals("a5", $res[0]["_id"]);
 
         $q = 'article() order(_id)';
@@ -132,6 +132,13 @@ final class QueryTest extends TestCase {
 
         $res = $q->run($this->testdata, ["id" => "4"]);
         // print_r($res);
+        $this->assertEquals(1, count($res));
+    }
+
+    public function testNested(): void {
+        $q = new lolql('*(_id matches "a*" && (_id=="a2" || _id=="a3") && _id=="a4")');
+        $res = $q->run($this->testdata);
+        // print_r($q);
         $this->assertEquals(1, count($res));
     }
 

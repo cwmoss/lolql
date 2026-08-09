@@ -12,13 +12,29 @@ class order {
     public Closure $fun;
 
     public function __construct(
-        public string $source
+        string|array $source
     ) {
-        $this->parse($source);
+        if (is_array($source)) {
+            $this->combine_tokens($source);
+        } else {
+            $this->orders = array_map(parser::words(...), explode(",", $source));
+        }
+        $this->parse();
     }
 
-    public function parse(string $source) {
-        $this->orders = array_map(parser::words(...), explode(",", $source));
+    public function combine_tokens(array $tokens) {
+        $buff = [];
+        foreach ($tokens as $t) {
+            if ($t->text == ",") {
+                $this->orders[] = $buff;
+                $buff = [];
+            } else {
+                $buff[] = $t->text;
+            }
+        }
+        if ($buff) $this->orders[] = $buff;
+    }
+    public function parse() {
         [$fun, $raw] = $this->build_order_fun();
         $this->fun = $fun;
         $this->raw = $raw;
