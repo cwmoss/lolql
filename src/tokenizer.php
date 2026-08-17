@@ -21,10 +21,7 @@ class tokenizer {
         $res = [];
         $buff = [];
         while ($token = array_shift($tokens)) {
-            if ($token->is(T_OPEN_TAG)) continue;
-            if ($token->is(T_CLOSE_TAG)) continue;
-            if ($token->is(T_WHITESPACE)) continue;
-            if ($token->is(T_COMMENT)) continue;
+            if ($token->is([\T_COMMENT, \T_DOC_COMMENT, \T_OPEN_TAG, \T_CLOSE_TAG, \T_WHITESPACE])) continue;
             if ($token->text == '(') {
                 if ($buff) $res[] = $buff;
                 $buff = [];
