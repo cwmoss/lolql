@@ -53,6 +53,16 @@ class sql_query {
         return $this;
     }
 
+    public function with_limit(int $limit, int $offset): self {
+        if ($this->limited) {
+            $this->sql = preg_replace("/LIMIT .*$/", "LIMIT $limit OFFSET $offset", $this->sql);
+        } else {
+            $this->limited = true;
+            $this->sql .= " LIMIT $limit OFFSET $offset";
+        }
+        return $this;
+    }
+
     public function decode_result(array $res): array {
         $col = $this->json_column_name;
         return array_map(

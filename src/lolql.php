@@ -46,6 +46,10 @@ class lolql {
         return [$res, $pageinfo];
     }
 
+    public function limit_one(): self {
+        $this->query->limit_one();
+        return $this;
+    }
     static public function run_sql(PDO $pdo, string $q): array {
         $fetchStyle = PDO::FETCH_ASSOC;
         $stmt = $pdo->prepare($q);

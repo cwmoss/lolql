@@ -37,6 +37,11 @@ class query {
         return array_values($rs);
     }
 
+    public function limit_one(): self {
+        $this->limit = new limit("1");
+        return $this;
+    }
+
     public function eval_cond(array $db, array $params = []): array {
         $evaluator = $this->get_evaluator();
         $query = $this->conditions;
