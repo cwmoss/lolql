@@ -26,7 +26,10 @@ class parser {
         // special syntax for _type queries
         //  ex. person(dept=="development")
         //      => _type=="person" && dept=="development"
+        $type = null;
         if (!(in_array($qk, ['q', '*', '😂', '❤️']))) {
+            $type = $qk;
+            /*
             array_unshift(
                 $q,
                 new condition(
@@ -36,6 +39,7 @@ class parser {
                     logic_operator::and
                 )
             );
+            */
         }
 
         $order = null;
@@ -48,7 +52,7 @@ class parser {
         }
         $projection = null;
 
-        return new query($q, $order, $limit, $projection, isset($parts['count']), isset($parts['preview']));
+        return new query($q, $order, $limit, $projection, $type, isset($parts['count']), isset($parts['preview']));
     }
 
     static public function combine_tokens(array $tokens): array {

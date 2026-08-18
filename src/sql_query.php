@@ -31,14 +31,17 @@ class sql_query {
     }
 
     public function make_query(query $query, array $params = []): self {
-        $sql = 'SELECT %s from %s WHERE %s(%s)';
+        $sql = 'SELECT %s from %s WHERE %s %s(%s)';
         $this->fun = $query->eval_cond_as_sql_function($params);
         $this->fun_name = 'lolql_' . bin2hex(\random_bytes(8));
+        $type = "";
+        if ($query->type) $type = "_type=='{$query->type}' AND ";
         // $db->createFunction($name, $fn, 1);
         $q = sprintf(
             $sql,
             $this->json_column_name,
             $this->table_name,
+            $type,
             $this->fun_name,
             $this->json_column_name
         );

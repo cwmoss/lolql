@@ -20,6 +20,7 @@ class query {
         public ?order $order = null,
         public ?limit $limit = null,
         public ?projection $projection = null,
+        public ?string $type = null,
         public bool $count = false,
         public bool $preview = false
     ) {
@@ -45,8 +46,10 @@ class query {
     public function eval_cond(array $db, array $params = []): array {
         $evaluator = $this->get_evaluator();
         $query = $this->conditions;
-        return array_filter($db, static function ($item) use ($query, $evaluator, $params) {
+        $type = $this->type;
+        return array_filter($db, static function ($item) use ($query, $evaluator, $params, $type) {
             // dbg('item-compare...', $item['_id'], $item['title']);
+            if ($type && (($item["_type"] ?? null) != $type)) return false;
             [$ok, $next] = $evaluator($query, $item, $params);
             return $ok;
         });

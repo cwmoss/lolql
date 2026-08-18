@@ -25,12 +25,12 @@ final class BaseTest extends TestCase {
 
         $q = new parser()->parse('person(name=="luisa" && city=="leipzig")');
         //  print_r($q);
-        $this->assertEquals(2, count($q->conditions));
-        $this->assertEquals(2, count($q->conditions[1]));
+        $this->assertEquals(1, count($q->conditions));
+        $this->assertEquals(2, count($q->conditions[0]));
 
         $q = new parser()->parse("person(name=='luisa' && city=='leipzig')");
         //  print_r($q);
-        $this->assertEquals(2, count($q->conditions));
-        $this->assertEquals(2, count($q->conditions[1]));
+        $this->assertEquals(1, count($q->conditions));
+        $this->assertEquals(2, count($q->conditions[0]));
     }
 }
