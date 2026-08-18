@@ -9,8 +9,8 @@ class sql_query {
     public Closure $fun;
     public string $fun_name;
     public string $sql;
-    public ?string $count_sql = null;
     public bool $limited = false;
+    public bool $count = false;
 
     public function __construct(
         query $q,
@@ -18,7 +18,16 @@ class sql_query {
         public string $table_name = "docs",
         public string $json_column_name = "body"
     ) {
+        $this->count = $q->count;
         $this->make_query($q, $params);
+    }
+
+    public function count_sql(): string {
+        $qc = str_replace("SELECT body", "SELECT count(*)", $this->sql);
+        if ($this->limited) {
+            return preg_replace("/LIMIT .*$/", "", $qc);
+        }
+        return $qc;
     }
 
     public function make_query(query $query, array $params = []): self {
@@ -43,13 +52,6 @@ class sql_query {
             $this->limited = true;
         }
         $this->sql = $q;
-        if ($query->count) {
-            if ($limit) {
-                $qc = str_replace("SELECT body", "SELECT count(*)", $q);
-                $qc = preg_replace("/LIMIT .*$/", "", $qc);
-                $this->count_sql = $qc;
-            }
-        }
         return $this;
     }
 

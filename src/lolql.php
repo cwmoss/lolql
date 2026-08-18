@@ -35,9 +35,9 @@ class lolql {
         $res = $q->decode_result($res);
 
         $pageinfo = [];
-        if ($q->count_sql) {
+        if ($q->count) {
             if ($q->limited) {
-                $total = self::run_sql_column($db, $q->count_sql);
+                $total = self::run_sql_column($db, $q->count_sql());
             } else {
                 $total = count($res);
             }
