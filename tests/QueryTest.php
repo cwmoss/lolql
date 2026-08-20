@@ -142,6 +142,13 @@ final class QueryTest extends TestCase {
         $this->assertEquals(1, count($res));
     }
 
+    public function testNot(): void {
+        $q = new lolql('*(!(_id=="a4") || _id=="a3")');
+        $res = $q->run($this->testdata);
+        print_r($q);
+        $this->assertEquals(2, count($res));
+    }
+
     // '*(title[] matches "hello" || (pub.status == $status && _id == 55) || date(publ) > now()) order(name age)',
     /*
     //$test[] = '*(_type == "article" && status != "draft")  order(name, familyname desc number) limit(11) ok ';

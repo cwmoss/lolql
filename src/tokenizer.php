@@ -9,6 +9,14 @@ class tokenizer {
     public function __construct(public string $source) {
     }
 
+    public function get_tokens(): array {
+        return PhpToken::tokenize('<?php ' . $this->source . ' ?>');
+        // return $tokens;
+        // $tokens = array_filter($tokens, fn($it)=>)
+        return self::parse_parentheses($tokens);
+        // return $tokens;
+    }
+
     public function tokenize(): array {
         $tokens = PhpToken::tokenize('<?php ' . $this->source . ' ?>');
         // return $tokens;

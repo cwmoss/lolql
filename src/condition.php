@@ -7,6 +7,8 @@ class condition {
     // parsing starts filling the left side
     private bool $current_is_left = true;
 
+    public array $n;
+
     public function __construct(
         public ?condition_part $left = null,
         public ?condition_part $right = null,

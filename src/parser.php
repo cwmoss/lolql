@@ -10,6 +10,7 @@ class parser {
     public function parse(string $source, array $params = []): query {
         $source = self::replace_params($source, $params);
         $tokens = new tokenizer($source)->tokenize();
+        print_r($tokens);
         $toplevel = array_reduce(array_chunk($tokens, 2), function ($res, $kv) {
             // first function must be a filter
             $name  = $kv[0][0]->text ?? "projection";
