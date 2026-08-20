@@ -3,7 +3,7 @@ require_once(__DIR__ . "/vendor/autoload.php");
 
 use cwmoss\lolql\ast;
 
-$code = '<?php $summe 444 "hey" \'joe\' !(_type!="post" || count(m.*.tags)>3 ?>';
+$code = '<?php $summe 444 4.5 -4.6 "hey" \'joe\' !(_type!="post" || count(m.*.tags)>3 ?>';
 $tokens = PhpToken::tokenize($code);
 
 foreach ($tokens as $token) {
