@@ -6,7 +6,7 @@ use cwmoss\lolql\lolql;
 use PHPUnit\Framework\TestCase;
 use cwmoss\lolql\parser;
 
-final class QueryDbTest extends TestCase {
+final class QueryDbSqlTest extends TestCase {
 
     public $testdata = [
         ['_id' => 'a1', '_type' => 'x', 'title' => 'hey', 'status' => 'draft', 'authors' => [['_ref' => '2'], ['_ref' => '4']]],
@@ -30,44 +30,44 @@ final class QueryDbTest extends TestCase {
     public function testEquals(): void {
         $db = $this->make_db();
         $q = 'article()';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(2, count($res));
 
         $q = 'article( status=="draft" )';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         // print_r($res);
         $this->assertEquals(1, count($res));
 
         $q = 'article( status != "trash" )';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(2, count($res));
     }
 
     public function testMatches(): void {
         $db = $this->make_db();
         $q = '*(title matches "hello")';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(2, count($res));
 
         $q = '*(title matches "*hello")';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(1, count($res));
 
         $q = '*(title matches "hello" || (status == "draft" && _id == "a5"))';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(3, count($res));
     }
 
     public function testIn(): void {
         $db = $this->make_db();
         $q = '*(status in ["draft", "waiting"])';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(3, count($res));
         // print_r($res);
         $this->assertEquals("a7", $res[2]["_id"]);
 
         $q = '*("cold" in tags)';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         // print_r($res);
         $this->assertEquals(1, count($res));
     }
@@ -75,13 +75,13 @@ final class QueryDbTest extends TestCase {
     public function testOrder(): void {
         $db = $this->make_db();
         $q = 'article() order(_id desc)';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(2, count($res));
         // print_r($res);
         $this->assertEquals("a5", $res[0]["_id"]);
 
         $q = 'article() order(_id)';
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         $this->assertEquals(2, count($res));
         // print_r($res);
         $this->assertEquals("a4", $res[0]["_id"]);
@@ -91,7 +91,7 @@ final class QueryDbTest extends TestCase {
         $db = $this->make_db();
         $q = '*(authors._ref=="4")';
         // $q = '*(authors._ref==4)'; // fails
-        [$res, $info] = new lolql($q)->run_pdo_fn($db);
+        [$res, $info] = new lolql($q)->run_pdo($db);
         // print_r($res);
         $this->assertEquals(1, count($res));
     }
@@ -99,27 +99,13 @@ final class QueryDbTest extends TestCase {
     public function testParams(): void {
         $db = $this->make_db();
         $q = new lolql('*(authors._ref==$id)');
-        [$res, $info] = $q->run_pdo_fn($db, ["id" => "44"]);
+        [$res, $info] = $q->run_pdo($db, ["id" => "44"]);
         // print_r($q);
         $this->assertEquals(0, count($res));
 
-        [$res, $info] = $q->run_pdo_fn($db, ["id" => "4"]);
+        [$res, $info] = $q->run_pdo($db, ["id" => "4"]);
         $res = $q->run($this->testdata, ["id" => "4"]);
         // print_r($res);
         $this->assertEquals(1, count($res));
-    }
-
-    public function testMakeQuerySql(): void {
-        $db = $this->make_db();
-        $q = new lolql('*(status == "published" && title matches "hello*")');
-        $sqlQuery = new \cwmoss\lolql\sql_query();
-        $sqlQuery->make_query_sql($q->query);
-
-        $this->assertStringContainsString("json_extract(body, '$.status')", $sqlQuery->sql);
-        $this->assertStringContainsString("LIKE", $sqlQuery->sql);
-
-        [$res, $info] = [lolql::run_sql($db, $sqlQuery->sql), []];
-        $this->assertEquals(2, count($res));
-        $this->assertEquals(["a2", "a4"], array_column(array_map(fn($row) => json_decode($row['body'], true), $res), '_id'));
     }
 }

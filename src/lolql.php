@@ -22,12 +22,36 @@ class lolql {
         return $this->query->query($data, $params);
     }
 
+    // sql with custom defined filter function 
+    public function make_sql_function(array $params = []): sql_query {
+        return new sql_query()->make_query($this->query, $params);
+    }
+
+    // sql with json expression
     public function make_sql(array $params = []): sql_query {
-        return new sql_query($this->query, $params);
+        return new sql_query()->make_query_sql($this->query, $params);
     }
 
     public function run_pdo(PDO\Sqlite $db, array $params = []): array {
         $q = $this->make_sql($params);
+
+        $res = self::run_sql($db, $q->sql);
+        $res = $q->decode_result($res);
+
+        $pageinfo = [];
+        if ($this->query->count) {
+            if ($q->limited) {
+                $total = self::run_sql_column($db, $q->count_sql());
+            } else {
+                $total = count($res);
+            }
+            $pageinfo = ['total' => $total];
+        }
+        return [$res, $pageinfo];
+    }
+
+    public function run_pdo_fn(PDO\Sqlite $db, array $params = []): array {
+        $q = $this->make_sql_function($params);
 
         $db->createFunction($q->fun_name, $q->fun, 1);
 
@@ -35,7 +59,7 @@ class lolql {
         $res = $q->decode_result($res);
 
         $pageinfo = [];
-        if ($q->count) {
+        if ($this->query->count) {
             if ($q->limited) {
                 $total = self::run_sql_column($db, $q->count_sql());
             } else {
