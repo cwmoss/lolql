@@ -20,6 +20,7 @@ enum operator: string {
     case and = "&&";
     case or = "||";
     case concat = "~";
+    case set = ":";
 
     static public function parse(string $source): ?self {
         $source = strtolower($source);

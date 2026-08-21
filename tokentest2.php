@@ -21,6 +21,10 @@ $q = new parser($code)->parse_query();
 
 print_r($q);
 print new printer()->print($q->ast);
+$code = "*(_type=='post' && size > 4) {_id, 'title': subtitle}";
+
+$q = new parser($code)->parse_query();
+print_r($q);
 exit;
 $e = operator::call;
 // var_dump($e instanceof operator);

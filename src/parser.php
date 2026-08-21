@@ -45,6 +45,11 @@ class parser {
             if ($token->text == "(") {
                 throw new syntax_exception("missing function name. got `{$token->text}` instead", $token, $this->source);
             }
+            if ($token->text == "{") {
+                if (!$query) throw new syntax_exception("query cannot start with a projection `{$token->text}`", $token, $this->source);
+                $query->projection = $this->parse_projection($tokens);
+                continue;
+            }
             if ($peek->text != "(") {
                 throw new syntax_exception("missing function input. got `{$peek->text}` instead", $peek, $this->source);
             }
@@ -84,6 +89,9 @@ class parser {
                 #print_r($node);
                 #print "return0 from )\n";
                 # print "closing ) $level\n";
+                return $node;
+            }
+            if ($txt === '}') {
                 return $node;
             }
             if ($txt === '!') {
@@ -139,6 +147,19 @@ class parser {
             };
         }
         return $node;
+    }
+
+    /** @param PhpToken[] $tokens */
+    public function parse_projection(array &$tokens): projection {
+        $res = new projection();
+        #while ($token = array_shift($tokens)) {
+        #    if ($token->is([\T_COMMENT, \T_DOC_COMMENT, \T_OPEN_TAG, \T_CLOSE_TAG, \T_WHITESPACE])) continue;
+        while ($tokens) {
+            // if ($token->text === ',') continue;
+            // if ($token->text === '}') break;
+            $res->add($this->parse($tokens));
+        }
+        return $res;
     }
 
     /** @param PhpToken[] $tokens */
