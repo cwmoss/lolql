@@ -22,6 +22,7 @@ Example:
     |_ why*
 
 
+ *(_id=="23" && (title matches "why*" || title matches "hello*"))
  
        |-- _id
        | ==

@@ -144,6 +144,15 @@ final class QueryTest extends TestCase {
         $this->assertEquals(0, count($res));
     }
 
+    public function testPrinter(): void {
+        $q = new lolql('*(_id=="23" && (title matches "why*" || title matches "hello*"))');
+        $tree = (new \cwmoss\lolql\printer())->print($q->query->ast);
+        $this->assertStringContainsString('AND', $tree);
+        $this->assertStringContainsString('_id', $tree);
+        $this->assertStringContainsString('title', $tree);
+        $this->assertStringContainsString('hello*', $tree);
+    }
+
     public function testNot(): void {
         $q = new lolql('*(!(_id=="a4") || _id=="a3")');
         $res = $q->run($this->testdata);
