@@ -1,0 +1,37 @@
+Structure:
+                                      ID(1)
+                                         /\
+                               ID(2)       ID(3)
+                                 /\              /\
+                          ID(4) ID(5) ID(6) ID(7)
+
+Example:
+                                         &&
+                                         /  \
+                                     ==    matches
+                                     / \     /    \
+                                  _id  23  title  why*
+
+&&
+ |_ ==
+ |     |_ _id
+       | ==
+ |     |_ 23
+ |_ matches
+    |_ title
+    |_ why*
+
+
+ 
+       |-- _id
+       | ==
+       |-- 23
+   && -|--
+          |     |-- title
+          |     | matches
+          |     |-- why*
+          | || -|
+                |-- title
+                | matches
+                |-- hello*
+                

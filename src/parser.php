@@ -49,7 +49,7 @@ class parser {
                 throw new syntax_exception("missing function input. got `{$peek->text}` instead", $peek, $this->source);
             }
             array_shift($tokens);
-            print "START tlF {$tokens[0]}\n";
+            // print "START tlF {$tokens[0]}\n";
             if (!$query) $query = query::new_from_ast($this->parse($tokens), $token->text);
             else {
                 match ($token->text) {
@@ -60,7 +60,7 @@ class parser {
                     default => throw new syntax_exception("unkown toplevel function `{$token->text}`.", $token, $this->source)
                 };
             }
-            print "END tlF {$tokens[0]}\n";
+            // print "END tlF {$tokens[0]}\n";
             // $end = array_shift($tokens);
             // if ($end->text != ")") {
             //    throw new syntax_exception("missing closing parenthesis. got {$end->text} instead", $end, $this->source);
@@ -83,7 +83,7 @@ class parser {
             if ($txt === ')') {
                 #print_r($node);
                 #print "return0 from )\n";
-                print "closing ) $level\n";
+                # print "closing ) $level\n";
                 return $node;
             }
             if ($txt === '!') {
@@ -137,25 +137,6 @@ class parser {
                 \T_STRING => $node->add($this->parse_path($tokens, $txt)),
                 default => throw new syntax_exception("unkown token ({$txt})", $token, $this->source)
             };
-
-            continue;
-
-            print "ADD level $level - $token->text\n";
-            print_r($node);
-            $node->add($token);
-            if (!$node->op) continue;
-
-            $op_prec = $this->prec[$node->operator()] ?? null;
-            if ($op_prec === null) {
-                #helper::dbg('+ op failed', $node);
-                print_r($node);
-                throw new syntax_exception("unkown operator ({$node->operator()})", $token, $this->source);
-            }
-            if ($op_prec <= $minprec) {
-                // break;
-            }
-
-            $node->add($this->parse($tokens, $op_prec, $level + 1));
         }
         return $node;
     }
@@ -206,5 +187,13 @@ class parser {
             $q = \str_replace('$' . $k, '"' . $v . '"', $q);
         }
         return $q;
+    }
+
+    static public function is_assoc(array $arr): bool {
+        if ([] === $arr) {
+            return false;
+        }
+        // return array_keys($arr) !== range(0, count($arr) - 1);
+        return !array_is_list($arr);
     }
 }

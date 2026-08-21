@@ -53,9 +53,11 @@ final class QueryTest extends TestCase {
 
     public function testIn(): void {
         $q = '*(status in ["draft", "waiting"])';
-        $res = new lolql($q)->run($this->testdata);
+        $lol =  new lolql($q);
+        $res = $lol->run($this->testdata);
         $this->assertEquals(3, count($res));
-        // print_r($res);
+        // print_r($lol->query);
+        // exit;
         $this->assertEquals("a7", $res[2]["_id"]);
 
         $q = '*("cold" in tags)';
@@ -79,7 +81,7 @@ final class QueryTest extends TestCase {
         $q = new lolql('article() order(_id desc)');
         $res = $q->run($this->testdata);
         $this->assertEquals(2, count($res));
-        print_r($q);
+        // print_r($q);
         $this->assertEquals("a5", $res[0]["_id"]);
 
         $q = 'article() order(_id)';
@@ -138,15 +140,15 @@ final class QueryTest extends TestCase {
     public function testNested(): void {
         $q = new lolql('*(_id matches "a*" && (_id=="a2" || _id=="a3") && _id=="a4")');
         $res = $q->run($this->testdata);
-        print_r($q);
-        $this->assertEquals(1, count($res));
+        // print_r($q);
+        $this->assertEquals(0, count($res));
     }
 
     public function testNot(): void {
         $q = new lolql('*(!(_id=="a4") || _id=="a3")');
         $res = $q->run($this->testdata);
         // print_r($q);
-        $this->assertEquals(2, count($res));
+        $this->assertEquals(6, count($res));
     }
 
     // '*(title[] matches "hello" || (pub.status == $status && _id == 55) || date(publ) > now()) order(name age)',

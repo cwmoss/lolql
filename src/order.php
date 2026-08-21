@@ -25,7 +25,7 @@ class order {
     }
 
     public function from_nodes(node $node) {
-        print_r($node);
+        // print_r($node);
         $this->orders[] = [];
     }
 

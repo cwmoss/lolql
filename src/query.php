@@ -36,7 +36,7 @@ class query {
     // TODO: slice/ limit
     public function query(array $ds, array $params = []): array {
         // TODO: params aus dem parsing herausnehmen und zum evaluierungszeitpunkt einfügen
-        $rs = evaluator::filter_dataset($this->ast, $ds, $params);
+        $rs = evaluator::filter_dataset($this, $ds, $params);
 
         if ($this->order) {
             usort($rs, $this->order->fun);
@@ -48,17 +48,5 @@ class query {
     public function limit_one(): self {
         $this->limit = new limit("1");
         return $this;
-    }
-
-    public function eval_cond_as_sql_function(array $params = []): Closure {
-        $evaluator = $this->get_evaluator();
-        $query = $this->conditions;
-        return static function ($json_col) use ($params, $query, $evaluator) {
-            $item = json_decode($json_col, true);
-            #print_r($item);
-            #return true;
-            [$ok, $dummy] = $evaluator($query, $item, $params);
-            return $ok;
-        };
     }
 }

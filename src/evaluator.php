@@ -7,8 +7,8 @@ use Closure;
 class evaluator {
 
 
-    static public function filter_dataset(node $node, array $data = [], array $params = []): array {
-        $fun = self::make_function($node);
+    static public function filter_dataset(query $query, array $data = [], array $params = []): array {
+        $fun = self::make_function_from_query($query);
         return array_filter($data, fn($data) => $fun($data, $params));
     }
 
@@ -20,6 +20,13 @@ class evaluator {
             #return true;
             $ok = $fun($data, $params);
             return $ok;
+        };
+    }
+
+    static public function make_function_from_query(query $query): Closure {
+        return static function (array $data = [], array $params = []) use ($query) {
+            if ($query->type && (($data["_type"] ?? null) != $query->type)) return false;
+            return self::evaluate($query->ast, $data, $params);
         };
     }
 
@@ -78,9 +85,9 @@ class evaluator {
         // $lft = $data->get($lft);
 
         return match ($op) {
-            operator::eq => $lft == $rgt,
+            operator::eq => self::cmp_eq($lft, $rgt),
             operator::eqt => $lft === $rgt,
-            operator::neq => $lft != $rgt,
+            operator::neq => !self::cmp_eq($lft, $rgt),
             operator::lt => $lft < $rgt,
             operator::gt => $lft > $rgt,
             operator::lte => $lft <= $rgt,
@@ -103,6 +110,16 @@ class evaluator {
             // "%" => $lft % $rgt,
             // "**" => $lft ** $rgt,
         };
+    }
+
+    static public function cmp_eq(mixed $left, mixed $right): bool {
+        if (is_array($left))
+            return array_search($right, $left);
+
+        if (is_array($right))
+            return array_search($left, $right);
+
+        return ($left == $right);
     }
 
     static public function cmp_matches(mixed $left, mixed $right): bool {

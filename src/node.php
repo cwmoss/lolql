@@ -6,9 +6,7 @@ use PhpToken;
 
 class node {
 
-    public ?array $n = null;
-
-    public function __construct(public $op = null, public $left = null, public $right = null) {
+    public function __construct(public ?operator $op = null, public $left = null, public $right = null, public int $level = 0) {
     }
 
     public function add(node|literal|path|parameter|operator $token) {
@@ -25,4 +23,8 @@ class node {
         if (is_string($this->op)) return $this->op;
         return $this->op->text;
     }
+
+    // public condition_part $current {
+    //    get => $this->current_is_left ? $this->left : $this->right;
+    //}
 }
