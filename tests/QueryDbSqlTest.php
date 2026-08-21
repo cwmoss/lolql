@@ -108,4 +108,20 @@ final class QueryDbSqlTest extends TestCase {
         // print_r($res);
         $this->assertEquals(1, count($res));
     }
+
+    public function testNested(): void {
+        $db = $this->make_db();
+        $q = new lolql('*(_id matches "a*" && (_id=="a2" || _id=="a3") && _id=="a4")');
+        [$res, $info] = $q->run_pdo($db, $this->testdata);
+        // print_r($q);
+        $this->assertEquals(0, count($res));
+    }
+
+    public function testNot(): void {
+        $db = $this->make_db();
+        $q = new lolql('*(!(_id=="a4") || _id=="a3")');
+        [$res, $info] = $q->run_pdo($db, $this->testdata);
+        // print_r($q);
+        $this->assertEquals(6, count($res));
+    }
 }
