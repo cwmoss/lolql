@@ -42,8 +42,8 @@ expression parser and evaluator for filtering datasets (arrays or sqlite json ta
 *(popularity >= 15) // greater than or equal
 *(popularity == 15)
 *(releaseDate != "2016-04-27") // not equal
-❌ *(!(releaseDate == "2016-04-27")) // not equal
-❌ *(!(releaseDate != "2016-04-27")) // even equal via double negatives "not not equal"
+*(!(releaseDate == "2016-04-27")) // not equal
+*(!(releaseDate != "2016-04-27")) // even equal via double negatives "not not equal"
 ❌ *(dateTime(_updatedAt) > dateTime('2018-04-20T20:43:31Z')) // Use zulu-time when comparing datetimes to strings
 ❌ *(dateTime(_updatedAt) > dateTime(now()) - 60*60*24*7) // Updated within the past week
 *(name < "Baker") // Records whose name precedes "Baker" alphabetically
@@ -59,7 +59,7 @@ expression parser and evaluator for filtering datasets (arrays or sqlite json ta
 ❌ *(!(_id in path("a.b.c.**"))) // _id matches anything that is not under the a.b.c path or deeper
 *("yolo" in tags) // documents that have the string "yolo" in the array "tags"
 *(status in ["completed", "archived"])) // the string field status is either == "completed" or "archived"
-❌ *("person_sigourney-weaver" in castMembers().person._ref) // Any document having a castMember referencing sigourney as its person
+❌ *("person_sigourney-weaver" in castMembers[].person._ref) // Any document having a castMember referencing sigourney as its person
 *(slug.current == "some-slug") // nested properties
 ❌ *(count((categories()->slug.current)(@ in ("action", "thriller"))) > 0) // documents that reference categories with slugs of "action" or "thriller"
 ❌ *(count((categories()->slug.current)(@ in ("action", "thriller"))) == 2) // documents that reference categories with slugs of "action" and "thriller". set == 2 based on the total number of items in the array
