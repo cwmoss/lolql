@@ -10,15 +10,15 @@ class printer {
         }
 
         $lines = [];
-        $this->render($node, '', true, $lines);
+        $this->render($node, '', false, $lines, true);
         return implode("\n", $lines);
     }
 
-    private function render(mixed $node, string $prefix, bool $isLast, array &$lines): void {
-        $connector = $isLast ? "└── " : "├── ";
+    private function render(mixed $node, string $prefix, bool $isLast, array &$lines, bool $isRoot = false): void {
+        $connector = $isRoot ? '❤️  ' : ($isLast ? "└── " : "├── ");
 
         if ($node instanceof node) {
-            $label = $node->op ? (strtoupper($node->op->name) ?? $node->operator()) : 'expr';
+            $label = $node->op ? ($node->op->name ?? $node->operator()) : 'expr';
             $lines[] = $prefix . $connector . $label;
 
             $children = [];
@@ -26,7 +26,7 @@ class printer {
             if ($node->right !== null) $children[] = $node->right;
 
             foreach ($children as $idx => $child) {
-                $childPrefix = $prefix . ($isLast ? '    ' : '│   ');
+                $childPrefix = $prefix . ($isRoot ? '' : ($isLast ? '    ' : '│   '));
                 $this->render($child, $childPrefix, $idx === count($children) - 1, $lines);
             }
             return;

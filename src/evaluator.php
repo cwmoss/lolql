@@ -44,16 +44,6 @@ class evaluator {
         };
     }
 
-    static public function evaluate_dbg(node|literal|path|parameter|null $node, $level = 0) {
-        if (!$node) return "";
-        if ($node instanceof literal) return is_array($node->value) ? join("|", $node->value) : $node->value;
-        if ($node instanceof parameter) return $node->name;
-        if ($node instanceof path) return join(".", $node->parts);
-        return str_repeat(" ", 2 * $level) . "("  . self::evaluate_dbg($node->left ?? null, $level + 1) .
-            str_repeat(" ", 2 * $level) . " " . ($node->op->value ?? "--") . " " .
-            self::evaluate_dbg($node->right ?? null, $level + 1) . ")\n";
-    }
-
     static public function evaluate(node $node, array $data = [], array $params = []): bool {
         // all
         if (!$node->left && !$node->right) return true;
