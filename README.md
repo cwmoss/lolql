@@ -6,6 +6,8 @@ expression parser and evaluator for filtering datasets (arrays or sqlite json ta
 
 ### filter
 
+    the filter expression MUST be the first expression in a lolql query
+
     *([filter-expressions...])
     *(_type == "movie") // All movie documents
 
