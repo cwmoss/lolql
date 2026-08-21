@@ -48,14 +48,14 @@ class ast {
             if ($token->is([\T_COMMENT, \T_DOC_COMMENT, \T_OPEN_TAG, \T_CLOSE_TAG, \T_WHITESPACE])) continue;
             $peek = $tokens[0] ?? new PhpToken(999, "");
             if ($token->text == "(") {
-                throw new syntax_exception("missing function name. got {$token->text} instead", $token, $this->source);
+                throw new syntax_exception("missing function name. got `{$token->text}` instead", $token, $this->source);
             }
             if ($peek->text != "(") {
-                throw new syntax_exception("missing function input. got {$peek->text} instead", $peek, $this->source);
+                throw new syntax_exception("missing function input. got `{$peek->text}` instead", $peek, $this->source);
             }
             array_shift($tokens);
             print "START tlF {$tokens[0]}\n";
-            $query[] = new node("call", $token->text, $this->parse($tokens));
+            $query[] = new node(operator::call, $token->text, $this->parse($tokens));
             print "END tlF {$tokens[0]}\n";
             // $end = array_shift($tokens);
             // if ($end->text != ")") {
@@ -83,9 +83,12 @@ class ast {
                 return $node;
             }
             if ($txt === '!') {
+                // TODO: next must be (
                 $op = operator::not;
+                array_shift($tokens);
                 $rval = $this->parse($tokens, $this->prec[$op->value], $level + 1);
-                return new node($op, $rval);
+                $n = new node($op, $rval);
+                $node->add($n);
                 // return $rval;
                 continue;
             }
@@ -93,8 +96,13 @@ class ast {
             if ($peek->text === '(' && $txt !== '(') {
                 #print "++call++";
                 #print_r($node);
-                $node->op = "call";
-                $node->left = $token->text;
+                #$node->op = "call";
+                #$node->left = $token->text;
+                // TODO: better all args as list of trees not deep-tree? 
+                array_shift($tokens);
+                $n = new node(operator::call, $token->text, $this->parse($tokens, 0, $level + 1));
+                $node->add($n);
+                // return $node;
                 continue;
             }
             if ($txt === '(') {
@@ -105,7 +113,7 @@ class ast {
             if ($txt == '&&' || $txt == '||') {
                 // print "and-or:";
                 // print_r($node);
-                $node = new node($txt, $node);
+                $node = new node(operator::parse($txt), $node);
                 $node->add($this->parse($tokens, $this->prec[$txt], $level + 1));
                 return $node;
             }

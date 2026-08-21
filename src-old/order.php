@@ -12,21 +12,14 @@ class order {
     public Closure $fun;
 
     public function __construct(
-        string|array|node $source
+        string|array $source
     ) {
         if (is_array($source)) {
             $this->combine_tokens($source);
-        } elseif (is_object($source)) {
-            $this->from_nodes($source);
         } else {
             $this->orders = array_map(parser::words(...), explode(",", $source));
         }
         $this->parse();
-    }
-
-    public function from_nodes(node $node) {
-        print_r($node);
-        $this->orders[] = [];
     }
 
     public function combine_tokens(array $tokens) {

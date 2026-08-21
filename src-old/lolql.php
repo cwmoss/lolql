@@ -15,7 +15,7 @@ class lolql {
     public query $query;
 
     public function __construct(string $query) {
-        $this->query = new parser($query)->parse_query();
+        $this->query = new parser($query)->parse($query);
     }
 
     public function run(array $data, array $params = []): array {

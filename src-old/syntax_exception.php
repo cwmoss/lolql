@@ -16,7 +16,7 @@ class syntax_exception extends Exception {
     }
 
     public function make_message(string $message, PhpToken $token, string $src) {
-        $msg = "lolql syntax error\n" . $src . "\n" . str_repeat(' ', ($token->pos - 6)) . '^ ' . $message . "\n";
+        $msg = "lolql syntax error\n" . $src . "\n" . str_repeat(' ', ($token->pos - 6)) . '^ ' . $message;
         return $msg;
     }
 }

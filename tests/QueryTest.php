@@ -138,14 +138,14 @@ final class QueryTest extends TestCase {
     public function testNested(): void {
         $q = new lolql('*(_id matches "a*" && (_id=="a2" || _id=="a3") && _id=="a4")');
         $res = $q->run($this->testdata);
-        // print_r($q);
+        print_r($q);
         $this->assertEquals(1, count($res));
     }
 
     public function testNot(): void {
         $q = new lolql('*(!(_id=="a4") || _id=="a3")');
         $res = $q->run($this->testdata);
-        print_r($q);
+        // print_r($q);
         $this->assertEquals(2, count($res));
     }
 
