@@ -156,16 +156,44 @@ class sql_query {
     }
 
     private function comparison_sql(string $left, string $right, string $operator, mixed $leftNode, mixed $rightNode): string {
-        if (($leftNode instanceof path || $rightNode instanceof path) && !($leftNode instanceof literal && is_array($leftNode->value)) && !($rightNode instanceof literal && is_array($rightNode->value))) {
-            $valueExpr = $leftNode instanceof path ? $right : $left;
-            $jsonExpr = $leftNode instanceof path ? $left : $right;
-
-            $arrayClause = "(json_type({$jsonExpr}) = 'array' AND EXISTS (SELECT 1 FROM json_each({$jsonExpr}) WHERE value {$operator} {$valueExpr}))";
-            $scalarClause = "({$left} {$operator} {$right})";
-            return "({$arrayClause} OR {$scalarClause})";
+        $base = "({$left} {$operator} {$right})";
+        if (!($leftNode instanceof path || $rightNode instanceof path)) {
+            return $base;
         }
 
-        return "({$left} {$operator} {$right})";
+        if ($leftNode instanceof literal && is_array($leftNode->value)) {
+            return $base;
+        }
+
+        if ($rightNode instanceof literal && is_array($rightNode->value)) {
+            return $base;
+        }
+
+        $checks = [$base];
+        foreach ([$leftNode, $rightNode] as $node) {
+            if (!$node instanceof path || count($node->parts) <= 1) {
+                continue;
+            }
+
+            $parts = $node->parts;
+            $parent = array_shift($parts);
+            $nested = implode('.', $parts);
+            $valueSide = $leftNode === $node ? $right : $left;
+            $literalValue = $leftNode === $node ? $rightNode : $leftNode;
+            if ($literalValue instanceof literal && is_array($literalValue->value)) {
+                continue;
+            }
+
+            $checks[] = sprintf(
+                "(EXISTS (SELECT 1 FROM json_each(%s) WHERE json_extract(value, '$.%s') %s %s))",
+                $this->propname($parent),
+                $nested,
+                $operator,
+                $valueSide
+            );
+        }
+
+        return '(' . implode(' OR ', $checks) . ')';
     }
 
     private function in_sql(string $left, string $right, mixed $leftNode, mixed $rightNode): string {
