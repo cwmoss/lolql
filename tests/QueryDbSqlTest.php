@@ -124,4 +124,14 @@ final class QueryDbSqlTest extends TestCase {
         // print_r($q);
         $this->assertEquals(6, count($res));
     }
+
+    public function testProjection(): void {
+        $db = $this->make_db();
+        $q = new lolql('*(_id=="a4" || _id=="a3") {_id, "s":status}');
+        [$res, $info] = $q->run_pdo($db, $this->testdata);
+        // print_r($q);
+        $this->assertEquals(2, count($res));
+        $exp = [["_id" => "a3", "s" => "published"], ["_id" => "a4", "s" => "published"]];
+        $this->assertEquals($exp, $res);
+    }
 }
