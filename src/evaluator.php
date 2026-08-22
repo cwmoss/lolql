@@ -44,7 +44,7 @@ class evaluator {
         };
     }
 
-    static public function evaluate(node $node, array $data = [], array $params = []): bool {
+    static public function evaluate(node $node, array $data = [], array $params = []): bool|array {
         // all
         if (!$node->left && !$node->right) return true;
 
@@ -71,7 +71,7 @@ class evaluator {
         return $res;
     }
 
-    static public function eval_op(operator $op, mixed $lft, mixed $rgt): bool {
+    static public function eval_op(operator $op, mixed $lft, mixed $rgt): bool|array {
         // $lft = $data->get($lft);
 
         return match ($op) {
@@ -89,6 +89,7 @@ class evaluator {
             operator::matches => self::cmp_matches($lft, $rgt),
             operator::isnull => is_null($lft),
             operator::notnull => !is_null($lft),
+            operator::set => [$lft, $rgt],
             // ":" => [$lft, $rgt],
             // operator::call => $this->eval_call($rgt, $lft),
             // "array" => $this->eval_array($lft),

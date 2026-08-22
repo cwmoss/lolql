@@ -21,7 +21,7 @@ $q = new parser($code)->parse_query();
 
 print_r($q);
 print new printer()->print($q->ast);
-$code = "*(_type=='post' && size > 4) {_id, 'title': subtitle}";
+$code = "*(_type=='post' && size > 4) {_id, 'title': subtitle, 'p':\$foo }";
 
 $q = new parser($code)->parse_query();
 print_r($q);

@@ -161,6 +161,15 @@ final class QueryTest extends TestCase {
         $this->assertEquals(6, count($res));
     }
 
+    public function testProjection(): void {
+        $q = new lolql('*(_id=="a4" || _id=="a3") {_id, "s":status}');
+        $res = $q->run($this->testdata);
+        // print_r($q);
+        $this->assertEquals(2, count($res));
+        $exp = [["_id" => "a3", "s" => "published"], ["_id" => "a4", "s" => "published"]];
+        $this->assertEquals($exp, $res);
+    }
+
     // '*(title[] matches "hello" || (pub.status == $status && _id == 55) || date(publ) > now()) order(name age)',
     /*
     //$test[] = '*(_type == "article" && status != "draft")  order(name, familyname desc number) limit(11) ok ';

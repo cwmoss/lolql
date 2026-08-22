@@ -41,7 +41,9 @@ class query {
         if ($this->order) {
             usort($rs, $this->order->fun);
         }
-
+        if ($this->projection) {
+            $rs = array_map(fn($data) => $this->projection->evaluate($data, $params), $rs);
+        }
         return array_values($rs);
     }
 

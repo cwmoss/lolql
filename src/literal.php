@@ -17,7 +17,7 @@ class literal {
             $this->type = "int";
         } else {
             $this->value = $value;
-            $this->type = "arr";
+            if (is_array($value)) $this->type = "arr";
         }
     }
 

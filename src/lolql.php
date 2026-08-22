@@ -67,6 +67,9 @@ class lolql {
             }
             $pageinfo = ['total' => $total];
         }
+        if ($this->query->projection) {
+            $res = array_map(fn($data) => $this->query->projection->evaluate($data, $params), $res);
+        }
         return [$res, $pageinfo];
     }
 
