@@ -21,10 +21,18 @@ expression parser and evaluator for filtering datasets (arrays or sqlite json ta
     limit(size [offset])
     limit(20 130) // limit to 20 results, start with offset 130
 
+### projection
+
+you have some simple options to reshape the result. the syntax uses curly braces.
+
+    {key, another_key, "key":path}
+    {_id, _type, "t":title}
+    // =>  {"_id":"a4","_type":"post","t":"Hello World"}
+
 ### complete examples
 
-    *(_type == "post" && cat=='music') order(published_at desc) limit(5)
-    // 5 newest posts in the music category
+    *(_type == "post" && cat=='music') order(published_at desc) limit(5) {title}
+    // titles of the 5 newest posts in the music category
 
 ## filter examples
 
