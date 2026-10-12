@@ -11,8 +11,8 @@ final class QueryDbTest extends TestCase {
     public $testdata = [
         ['_id' => 'a1', '_type' => 'x', 'title' => 'hey', 'status' => 'draft', 'authors' => [['_ref' => '2'], ['_ref' => '4']]],
         ['_id' => 'a2', '_type' => 'y', 'title' => 'hello', 'status' => 'published', 'tags' => ['hot', 'cold']],
-        ['_id' => 'a3', '_type' => 'z', 'title' => 'world', 'status' => 'published', 'tags' => ['hot']],
-        ['_id' => 'a4', 'title' => 'hello world', 'status' => 'published', '_type' => 'article'],
+        ['_id' => 'a3', '_type' => 'z', 'title' => 'world', 'status' => 'published', 'tags' => ['hot'], 'on_homepage' => false],
+        ['_id' => 'a4', 'title' => 'hello world', 'status' => 'published', '_type' => 'article', 'on_homepage' => true],
         ['_id' => 'a5', 'title' => 'world is caos', 'status' => 'draft', '_type' => 'article', 'tags' => ['blue']],
         ['_id' => 'a6', '_type' => 'x', 'title' => 'yourworld is caos', 'status' => 'published'],
         ['_id' => 'a7', '_type' => 'y', 'title' => 'worldwideweb', 'status' => 'waiting'],
@@ -41,6 +41,16 @@ final class QueryDbTest extends TestCase {
         $q = 'article( status != "trash" )';
         [$res, $info] = new lolql($q)->run_pdo_fn($db);
         $this->assertEquals(2, count($res));
+    }
+
+    public function testTrue(): void {
+        $db = $this->make_db();
+
+        [$res, $info] = new lolql('*(on_homepage==true)')->run_pdo_fn($db);
+        $this->assertEquals(["a4"], array_column($res, '_id'));
+
+        [$res, $info] = new lolql('*(on_homepage==false)')->run_pdo_fn($db);
+        $this->assertEquals(["a3"], array_column($res, '_id'));
     }
 
     public function testMatches(): void {

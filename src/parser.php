@@ -142,7 +142,9 @@ class parser {
                 \T_CONSTANT_ENCAPSED_STRING => $node->add(new literal($txt, $txt[0])),
                 \T_LNUMBER => $node->add(new literal($txt)),
                 \T_VARIABLE => $node->add(new parameter($txt)),
-                \T_STRING => $node->add($this->parse_path($tokens, $txt)),
+                \T_STRING => in_array(strtolower($txt), ['true', 'false'], true)
+                    ? $node->add(new literal(strtolower($txt) === 'true'))
+                    : $node->add($this->parse_path($tokens, $txt)),
                 default => throw new syntax_exception("unkown token ({$txt})", $token, $this->source)
             };
         }

@@ -11,8 +11,8 @@ final class QueryTest extends TestCase {
     public $testdata = [
         ['_id' => 'a1', 'title' => 'hey', 'status' => 'draft', 'visits' => 20, 'authors' => [['_ref' => '2'], ['_ref' => '4']]],
         ['_id' => 'a2', 'title' => 'hello', 'status' => 'published', 'tags' => ['hot', 'cold'], 'visits' => 200],
-        ['_id' => 'a3', 'title' => 'world', 'status' => 'published', 'tags' => ['hot'], 'visits' => 5],
-        ['_id' => 'a4', 'title' => 'hello world', 'status' => 'published', '_type' => 'article'],
+        ['_id' => 'a3', 'title' => 'world', 'status' => 'published', 'tags' => ['hot'], 'visits' => 5, 'on_homepage' => false],
+        ['_id' => 'a4', 'title' => 'hello world', 'status' => 'published', '_type' => 'article', 'on_homepage' => true],
         ['_id' => 'a5', 'title' => 'world is caos', 'status' => 'draft', '_type' => 'article', 'tags' => ['blue']],
         ['_id' => 'a6', 'title' => 'yourworld is caos', 'status' => 'published', 'visits' => 55],
         ['_id' => 'a7', 'title' => 'worldwideweb', 'status' => 'waiting', 'visits' => 14],
@@ -159,6 +159,19 @@ final class QueryTest extends TestCase {
         $res = $q->run($this->testdata);
         // print_r($q);
         $this->assertEquals(6, count($res));
+    }
+
+    public function testTrue(): void {
+        $q = new lolql('*(on_homepage==true)');
+        $res = $q->run($this->testdata);
+        // print_r($q);
+        $this->assertEquals(1, count($res));
+        $this->assertEquals("a4", $res[0]["_id"]);
+
+        $q = new lolql('*(on_homepage==false)');
+        $res = $q->run($this->testdata);
+        $this->assertEquals(1, count($res));
+        $this->assertEquals("a3", $res[0]["_id"]);
     }
 
     public function testProjection(): void {

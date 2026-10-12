@@ -104,6 +104,10 @@ class evaluator {
     }
 
     static public function cmp_eq(mixed $left, mixed $right): bool {
+        if (is_bool($left) || is_bool($right)) {
+            return $left === $right;
+        }
+
         if (is_array($left))
             return array_search($right, $left);
 

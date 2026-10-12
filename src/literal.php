@@ -6,12 +6,15 @@ use PhpToken;
 
 class literal {
 
-    public int|string|array $value;
+    public int|string|array|bool $value;
     public $type = "string";
 
-    public function __construct(string|array|int $value, ?string $quote = null) {
+    public function __construct(string|array|int|bool $value, ?string $quote = null) {
         if ($quote) {
             $this->value = trim($value, $quote);
+        } elseif (is_bool($value)) {
+            $this->value = $value;
+            $this->type = "bool";
         } elseif (is_numeric($value)) {
             $this->value = (int) $value;
             $this->type = "int";
