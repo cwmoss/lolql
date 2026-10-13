@@ -14,8 +14,8 @@ final class QueryTest extends TestCase {
         ['_id' => 'a3', 'title' => 'world', 'status' => 'published', 'tags' => ['hot'], 'visits' => 5, 'on_homepage' => false],
         ['_id' => 'a4', 'title' => 'hello world', 'status' => 'published', '_type' => 'article', 'on_homepage' => true],
         ['_id' => 'a5', 'title' => 'world is caos', 'status' => 'draft', '_type' => 'article', 'tags' => ['blue']],
-        ['_id' => 'a6', 'title' => 'yourworld is caos', 'status' => 'published', 'visits' => 55],
-        ['_id' => 'a7', 'title' => 'worldwideweb', 'status' => 'waiting', 'visits' => 14],
+        ['_id' => 'a6', 'title' => 'yourworld is caos', 'status' => 'published', 'visits' => 55, 'slug' => ["current" => "caos"]],
+        ['_id' => 'a7', 'title' => 'worldwideweb', 'status' => 'waiting', 'visits' => 14, 'slug' => ["current" => "www"]],
     ];
 
     public function testAll(): void {
@@ -172,6 +172,14 @@ final class QueryTest extends TestCase {
         $res = $q->run($this->testdata);
         $this->assertEquals(1, count($res));
         $this->assertEquals("a3", $res[0]["_id"]);
+    }
+
+    public function testSubobj(): void {
+        $q = new lolql('*(slug.current=="www")');
+        $res = $q->run($this->testdata);
+        // print_r($q);
+        $this->assertEquals(1, count($res));
+        $this->assertEquals("a7", $res[0]["_id"]);
     }
 
     public function testProjection(): void {

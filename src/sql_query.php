@@ -184,8 +184,12 @@ class sql_query {
                 continue;
             }
 
+            $parentPath = '$.' . $parent;
+
             $checks[] = sprintf(
-                "(EXISTS (SELECT 1 FROM json_each(%s) WHERE json_extract(value, '$.%s') %s %s))",
+                "(EXISTS (SELECT 1 FROM json_each(CASE WHEN json_type(%s, '%s') = 'array' THEN %s ELSE '[]' END) AS nested_items WHERE json_extract(CASE WHEN nested_items.type = 'object' THEN nested_items.value ELSE '{}' END, '$.%s') %s %s))",
+                $this->json_column_name,
+                $parentPath,
                 $this->propname($parent),
                 $nested,
                 $operator,

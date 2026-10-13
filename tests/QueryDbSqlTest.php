@@ -14,8 +14,8 @@ final class QueryDbSqlTest extends TestCase {
         ['_id' => 'a3', '_type' => 'z', 'title' => 'world', 'status' => 'published', 'tags' => ['hot'], 'on_homepage' => false],
         ['_id' => 'a4', 'title' => 'hello world', 'status' => 'published', '_type' => 'article', 'on_homepage' => true],
         ['_id' => 'a5', 'title' => 'world is caos', 'status' => 'draft', '_type' => 'article', 'tags' => ['blue']],
-        ['_id' => 'a6', '_type' => 'x', 'title' => 'yourworld is caos', 'status' => 'published'],
-        ['_id' => 'a7', '_type' => 'y', 'title' => 'worldwideweb', 'status' => 'waiting'],
+        ['_id' => 'a6', '_type' => 'x', 'title' => 'yourworld is caos', 'status' => 'published', 'slug' => ["current" => "caos"]],
+        ['_id' => 'a7', '_type' => 'y', 'title' => 'worldwideweb', 'status' => 'waiting', 'slug' => ["current" => "www"]],
     ];
 
     public function make_db() {
@@ -133,6 +133,15 @@ final class QueryDbSqlTest extends TestCase {
         [$res, $info] = $q->run_pdo($db, $this->testdata);
         // print_r($q);
         $this->assertEquals(6, count($res));
+    }
+
+    public function testSubobj(): void {
+        $db = $this->make_db();
+        $q = new lolql('*(slug.current=="www")');
+        [$res, $info] = $q->run_pdo($db, ["id" => "44"]);
+        // print_r($q);
+        $this->assertEquals(1, count($res));
+        $this->assertEquals("a7", $res[0]["_id"]);
     }
 
     public function testProjection(): void {
